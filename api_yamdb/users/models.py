@@ -1,6 +1,8 @@
 from django.contrib.auth.models import AbstractUser
 from django.db.models import CharField, EmailField, TextField
 
+from .validators import username_validator
+
 
 USER = 'user'
 MODERATOR = 'moderator'
@@ -14,13 +16,19 @@ ROLES = [
 
 class User(AbstractUser):
     """
-    asdf
+    Модель пользователя.
+    Добавлены поля роли и биографии.
+    Доступные роли: юзер, модератор и админ.
+    По умолчанию присваивает роль - юзер.
     """
     username = CharField(
         unique=True,
         max_length=150,
         null=False,
         blank=False,
+        validators=[
+            username_validator,
+        ],
         help_text='Имя пользователя. Не более 50 символов',
         verbose_name='Имя пользователя',
         error_messages={
@@ -60,3 +68,19 @@ class User(AbstractUser):
         blank=False,
         null=True,
     )
+
+    def is_user(self):
+        return self.role == USER
+
+    def is_moderator(self):
+        return self.role == MODERATOR
+
+    def is_admin(self):
+        return self.role == ADMIN
+
+    def __str__(self):
+        return self.username
+
+    class Meta:
+        verbose_name = 'user'
+        verbose_name_plural = 'users'
