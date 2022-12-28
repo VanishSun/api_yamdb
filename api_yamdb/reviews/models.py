@@ -5,7 +5,7 @@ class Title(models.Model):
     """ Модель, определяющая произведения
     """
     name = models.CharField(max_length=256)
-    year = models.IntegerField()
+    year = models.IntegerField(blank=False, null=False)
     description = models.TextField(blank=True, null=True)
     category = models.ForeignKey(
         'Category',
