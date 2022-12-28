@@ -6,16 +6,20 @@ class Title(models.Model):
     """
     name = models.CharField(max_length=256)
     year = models.IntegerField()
-    description = models.TextField()
+    description = models.TextField(blank=True, null=True)
     category = models.ForeignKey(
         'Category',
         on_delete=models.CASCADE,
-        related_name='categories'
+        related_name='categories',
+        blank=False,
+        null=False
     )
     genre = models.ForeignKey(
         'Genre',
         on_delete=models.CASCADE,
-        related_name='genres'
+        related_name='genres',
+        blank=False,
+        null=False
     )
 
 
