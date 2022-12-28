@@ -7,7 +7,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from users.models import User
 from .serializers import UserSerializer, GetTokenSerializer, SignUpSerializer
-
+from .tasks import send_msg
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -19,6 +19,16 @@ class SignUpView(APIView):
     def post(self, request):
         serializer = SignUpSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        username = serializer.validated_data.get('username')
+        email = serializer.validated_data.get('email')
+        user = User.objects.get_or_create(
+            username=username,
+            email=email
+        )
+        user.save()
+        send_msg(user)
+        Response()
+        
 
 
 class GetTokenView(APIView):
