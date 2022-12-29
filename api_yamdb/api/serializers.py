@@ -36,6 +36,17 @@ class GetTokenSerializer(serializers.Serializer):
 
 
 class SignUpSerializer(serializers.Serializer):
+    username = serializers.CharField(
+        required=True,
+        max_length=150,
+        validators=[
+            username_validator,
+        ]
+    )
+    email = serializers.EmailField(
+        required=True,
+        max_length=254
+    )
 
     class Meta:
         model = User
