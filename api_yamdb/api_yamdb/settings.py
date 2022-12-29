@@ -111,11 +111,16 @@ STATICFILES_DIRS = ((BASE_DIR / 'static/'),)
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+
+FROM_EMAIL = "vanish.sun@gmail.com"
+
+EMAIL_FILE_PATH = (BASE_DIR / 'sent_emails')
 
 REST_FRAMEWORK = {
-    # 'DEFAULT_PERMISSION_CLASSES': [
-    #     'api.permissions.AllowAny',
-    # ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
