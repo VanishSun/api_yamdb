@@ -9,14 +9,14 @@ class Title(models.Model):
     description = models.TextField(blank=True, null=True)
     category = models.ForeignKey(
         'Category',
-        on_delete=models.CASCADE,
+        on_delete=models.DO_NOTHING,
         related_name='categories',
         blank=False,
         null=False
     )
     genre = models.ForeignKey(
         'Genre',
-        on_delete=models.CASCADE,
+        on_delete=models.DO_NOTHING,
         related_name='genres',
         blank=False,
         null=False
