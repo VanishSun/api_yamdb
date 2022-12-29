@@ -1,4 +1,5 @@
 from django.core.mail import send_mail
+from django.conf import settings
 
 
 def send_msg(user):
@@ -12,5 +13,5 @@ def send_msg(user):
     Код подтверждения: {user.confirmation_code}
     """
     send_mail(
-        subject, body, email, ["vanish@gmail.com"],
+        subject, body, settings.FROM_EMAIL, [email, ],
     )
