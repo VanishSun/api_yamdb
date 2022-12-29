@@ -67,6 +67,7 @@ class User(AbstractUser):
         max_length=255,
         blank=False,
         null=True,
+        default='12345'
     )
 
     @property
@@ -87,4 +88,3 @@ class User(AbstractUser):
     class Meta:
         verbose_name = 'user'
         verbose_name_plural = 'users'
-
