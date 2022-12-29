@@ -1,17 +1,27 @@
+from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets
+from rest_framework import filters, viewsets
 from rest_framework.response import Response
-from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
+from rest_framework.serializers import ValidationError
+from rest_framework.status import (
+    HTTP_200_OK,
+    HTTP_201_CREATED,
+    HTTP_400_BAD_REQUEST
+)
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from users.models import User
-from .serializers import UserSerializer, GetTokenSerializer, SignUpSerializer
+from .serializers import GetTokenSerializer, SignUpSerializer, UserSerializer
 from .tasks import send_msg
+
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    lookup_field = 'username'
+    filter_backends = (filters.SearchFilter, )
+    search_fields = ('username', )
 
 
 class SignUpView(APIView):
@@ -21,14 +31,20 @@ class SignUpView(APIView):
         serializer.is_valid(raise_exception=True)
         username = serializer.validated_data.get('username')
         email = serializer.validated_data.get('email')
-        user = User.objects.get_or_create(
-            username=username,
-            email=email
-        )
+        print(username, email)
+        try:
+            user, created = User.objects.get_or_create(
+                username=username,
+                email=email
+            )
+        except IntegrityError as error:
+            raise ValidationError(
+                ('Ошибка создания пользователя'
+                 f'в базе с username "{username}" и email "{email}"')
+            ) from error
         user.save()
         send_msg(user)
-        Response()
-        
+        return Response(serializer.validated_data, status=HTTP_200_OK)
 
 
 class GetTokenView(APIView):
