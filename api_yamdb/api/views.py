@@ -25,6 +25,7 @@ from .tasks import send_msg
 
 
 class UserViewSet(viewsets.ModelViewSet):
+    http_method_names = ['get', 'post', 'patch', 'delete']
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (IsAuthenticated, IsAdmin,)
@@ -38,7 +39,7 @@ class UserViewSet(viewsets.ModelViewSet):
         permission_classes=(IsAuthenticated,),
         url_path='me'
     )
-    def get_current_user_info(self, request):
+    def current_user_info(self, request):
         serializer = UserProfileSerializer(
             request.user,
             data=request.data,
