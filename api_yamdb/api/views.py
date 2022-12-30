@@ -10,10 +10,11 @@ from api.serializers import (
 )
 
 
-class CreateListDestroyViewSet(mixins.CreateModelMixin,
-                               mixins.ListModelMixins,
-                               mixins.DestroyModelMixin,
-                               viewsets.GenericViewSet):
+class CreateListDestroyViewSet(
+    mixins.CreateModelMixin,
+    mixins.ListModelMixins,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet):
     pass
 
 
