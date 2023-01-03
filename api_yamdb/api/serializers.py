@@ -1,5 +1,6 @@
 from rest_framework import serializers, validators
 
+from reviews.models import Category, Genre, Title
 from users.models import User
 from users.validators import username_validator
 
@@ -62,3 +63,24 @@ class UserProfileSerializer(UserSerializer):
 
     class Meta(UserSerializer.Meta):
         read_only_fields = ('username', 'email', 'role', )
+
+
+class TitleSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Title
+        fields = '__all__'
+
+
+class CategorySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Category
+        fields = '__all__'
+
+
+class GenreSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Genre
+        fields = '__all__'

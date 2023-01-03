@@ -1,6 +1,6 @@
 from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
-from rest_framework import filters, viewsets
+from rest_framework import filters, mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -13,15 +13,27 @@ from rest_framework.status import (
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from reviews.models import Category, Genre, Title
 from users.models import User
 from .permissions import IsAdmin
 from .serializers import (
+    CategorySerializer,
+    GenreSerializer,
     GetTokenSerializer,
     SignUpSerializer,
+    TitleSerializer,
     UserProfileSerializer,
     UserSerializer
 )
 from .tasks import send_msg
+
+
+class CreateListDestroyViewSet(
+    mixins.CreateModelMixin,
+    mixins.ListModelMixins,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet):
+    pass
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -96,3 +108,24 @@ class GetTokenView(APIView):
             },
             status=HTTP_201_CREATED
         )
+
+
+class TitleViewSet(viewsets.ModelViewSet):
+    queryset = Title.objects.all()
+    serializer_class = TitleSerializer
+
+
+class CategoryViewSet(CreateListDestroyViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    lookup_field = 'slug'
+    filter_backends = (filters.SearchField, )
+    search_fields = ('name', )
+
+
+class GenreViewSet(CreateListDestroyViewSet):
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+    lookup_field = 'slug'
+    filter_backends = (filters.SearchField, )
+    search_fields = ('name', )
