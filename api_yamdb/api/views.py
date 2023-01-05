@@ -15,8 +15,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from reviews.models import Category, Genre, Title
 from users.models import User
-from api.permissions import IsAdmin
-from api.permissions import SafeMethods
+from api.permissions import IsAdmin, IsAdminOrReadOnly
 from api.serializers import (
     CategorySerializer,
     CommentSerializer,

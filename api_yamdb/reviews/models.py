@@ -1,9 +1,9 @@
 from django.contrib.auth import get_user_model
 from django.core.validators import (
+    MaxLengthValidator,
     MaxValueValidator,
     MinValueValidator,
-    RegexValidator,
-    MaxLengthValidator
+    RegexValidator
 )
 from django.db import models
 
@@ -28,8 +28,7 @@ class Title(models.Model):
     genre = models.ManyToManyField(
         'Genre',
         through='GenreTitle',
-        blank=True,
-        null=True
+        blank=True
     )
 
 

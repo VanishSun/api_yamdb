@@ -1,16 +1,16 @@
 from rest_framework import serializers, validators
-from django.db.models import Avg
+
 from reviews.models import (
     Category,
     Comment,
     Genre,
     Review,
-    Title,
-    GenreTitle
+    Title
 )
 from users.models import User
 from users.validators import username_validator
 
+from django.db.models import Avg
 from django.core.validators import (
     RegexValidator,
     MaxLengthValidator,
