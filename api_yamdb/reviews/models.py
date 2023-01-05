@@ -5,7 +5,6 @@ from django.core.validators import (
     RegexValidator,
     MaxLengthValidator
 )
-from reviews.validators import name_validator
 from django.db import models
 
 LENGTH_TEXT = 100

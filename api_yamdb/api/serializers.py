@@ -1,5 +1,5 @@
 from rest_framework import serializers, validators
-
+from django.db.models import Avg
 from reviews.models import (
     Category,
     Comment,
@@ -13,8 +13,11 @@ from users.validators import username_validator
 
 from django.core.validators import (
     RegexValidator,
-    MaxLengthValidator
+    MaxLengthValidator,
+    MaxValueValidator
 )
+
+from django.utils import timezone
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -83,18 +86,6 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = ('name', 'slug', )
 
-    '''def validate_name(self, value):
-        if len(value > 256):
-            message = 'Превышена допустимая длина'
-            serializers.ValidationError(message)
-        return value
-
-    def validate_slug(self, value):
-        if len(value > 50):
-            message = 'Превышена допустимая длина'
-            serializers.ValidationError(message)
-        return value'''
-
 
 class GenreSerializer(serializers.ModelSerializer):
 
@@ -103,9 +94,10 @@ class GenreSerializer(serializers.ModelSerializer):
         fields = ('name', 'slug', )
 
 
-class TitleSerializer(serializers.ModelSerializer):
-    category = CategorySerializer()
-    genre = GenreSerializer(many=True)
+class TitleListSerializer(serializers.ModelSerializer):
+    category = CategorySerializer(read_only=True)
+    genre = GenreSerializer(read_only=True, many=True)
+    rating = serializers.SerializerMethodField()
 
     class Meta:
         model = Title
@@ -114,26 +106,43 @@ class TitleSerializer(serializers.ModelSerializer):
             'name',
             'year',
             'description',
+            'rating',
             'category',
             'genre'
         )
 
-    def create(self, validated_data):
-        p_category = validated_data.pop('category')
-        p_genres = validated_data.pop('genre')
+    def get_rating(self, obj):
+        title = Title.objects.get(pk=obj.id)
+        
+        return 5
 
-        title = Title.objects.create(**validated_data)
-        category = Category.objects.get(slug=p_category)
 
-        title.category_id = category.id
-        title.save()
+class TitlePostSerializer(serializers.ModelSerializer):
+    category = serializers.SlugRelatedField(
+        queryset=Category.objects.all(),
+        slug_field='slug'
+    )
+    genre = serializers.SlugRelatedField(
+        queryset=Genre.objects.all(),
+        slug_field='slug',
+        many=True
+    )
+    year = serializers.IntegerField(
+        validators=[MaxValueValidator(timezone.now().year)]
+    )
 
-        for g in p_genres:
-            genre = Genre.objects.get(slug=g)
-            GenreTitle.objects.get_or_create(
-                genre=genre,
-                title=title
-            )
+    class Meta:
+        model = Title
+        fields = (
+            'name',
+            'year',
+            'description',
+            'category',
+            'genre'
+        )
+
+    def to_representation(self, value):
+        return TitleListSerializer(self.instance).data
 
 
 class ReviewSerializer(serializers.ModelSerializer):

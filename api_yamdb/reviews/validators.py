@@ -3,13 +3,6 @@ import re
 from django.core.exceptions import ValidationError
 
 
-def name_validator(value):
-    if len(value) > 256:
-        raise ValidationError(
-            message='Наименование категории превышает 256 сим.',
-            params={'value': value}
-        )
-
 def username_validator(value):
     if value == "me":
         raise ValidationError(

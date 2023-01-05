@@ -24,7 +24,8 @@ from api.serializers import (
     GetTokenSerializer,
     ReviewSerializer,
     SignUpSerializer,
-    TitleSerializer,
+    TitleListSerializer,
+    TitlePostSerializer,
     UserProfileSerializer,
     UserSerializer
 )
@@ -116,8 +117,12 @@ class GetTokenView(APIView):
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
-    serializer_class = TitleSerializer
     permission_classes = (SafeMethods, )
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return TitleListSerializer
+        return TitlePostSerializer
 
 
 class CategoryViewSet(CreateListDestroyViewSet):
