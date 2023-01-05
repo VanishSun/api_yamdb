@@ -1,5 +1,10 @@
 from django.contrib.auth import get_user_model
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.validators import (
+    MaxLengthValidator,
+    MaxValueValidator,
+    MinValueValidator,
+    RegexValidator
+)
 from django.db import models
 
 LENGTH_TEXT = 100
@@ -17,30 +22,63 @@ class Title(models.Model):
         'Category',
         on_delete=models.DO_NOTHING,
         related_name='categories',
-        blank=False,
-        null=False
+        blank=True,
+        null=True
     )
-    genre = models.ForeignKey(
+    genre = models.ManyToManyField(
         'Genre',
-        on_delete=models.DO_NOTHING,
-        related_name='genres',
-        blank=False,
-        null=False
+        through='GenreTitle',
+        blank=True
     )
 
 
 class Category(models.Model):
     """ Модель, определяющая категории
     """
-    name = models.CharField(max_length=256, blank=False)
-    slug = models.SlugField(blank=False, unique=True)
+    name = models.CharField(
+        max_length=256,
+        blank=False,
+        validators=[
+            MaxLengthValidator(256),
+        ]
+    )
+    slug = models.SlugField(
+        max_length=50,
+        blank=False,
+        unique=True,
+        validators=[
+            MaxLengthValidator(50),
+            RegexValidator('^[-a-zA-Z0-9_]+$'),
+        ]
+    )
 
 
 class Genre(models.Model):
     """ Модель, определяющая жанры
     """
-    name = models.CharField(max_length=256, blank=False)
-    slug = models.SlugField(blank=False, unique=True)
+    name = models.CharField(
+        max_length=256,
+        blank=False,
+        validators=[
+            MaxLengthValidator(256),
+        ]
+    )
+    slug = models.SlugField(
+        max_length=50,
+        blank=False,
+        unique=True,
+        validators=[
+            MaxLengthValidator(50),
+            RegexValidator('^[-a-zA-Z0-9_]+$'),
+        ]
+    )
+
+class GenreTitle(models.Model):
+    genre = models.ForeignKey('Genre', on_delete=models.CASCADE)
+    title = models.ForeignKey('Title', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.genre} {self.title}'
 
 
 class Review(models.Model):

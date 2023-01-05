@@ -15,15 +15,16 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from reviews.models import Category, Genre, Title
 from users.models import User
-from .permissions import IsAdmin
-from .serializers import (
+from api.permissions import IsAdmin, IsAdminOrReadOnly
+from api.serializers import (
     CategorySerializer,
     CommentSerializer,
     GenreSerializer,
     GetTokenSerializer,
     ReviewSerializer,
     SignUpSerializer,
-    TitleSerializer,
+    TitleListSerializer,
+    TitlePostSerializer,
     UserProfileSerializer,
     UserSerializer
 )
@@ -115,12 +116,18 @@ class GetTokenView(APIView):
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
-    serializer_class = TitleSerializer
+    permission_classes = (SafeMethods, )
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return TitleListSerializer
+        return TitlePostSerializer
 
 
 class CategoryViewSet(CreateListDestroyViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    permission_classes = (SafeMethods, )
     lookup_field = 'slug'
     filter_backends = (filters.SearchFilter, )
     search_fields = ('name', )
@@ -129,6 +136,7 @@ class CategoryViewSet(CreateListDestroyViewSet):
 class GenreViewSet(CreateListDestroyViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
+    permission_classes = (SafeMethods, )
     lookup_field = 'slug'
     filter_backends = (filters.SearchFilter, )
     search_fields = ('name', )

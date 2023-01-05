@@ -1,8 +1,23 @@
 from rest_framework import serializers, validators
 
-from reviews.models import Category, Comment, Genre, Review, Title
+from reviews.models import (
+    Category,
+    Comment,
+    Genre,
+    Review,
+    Title
+)
 from users.models import User
 from users.validators import username_validator
+
+from django.db.models import Avg
+from django.core.validators import (
+    RegexValidator,
+    MaxLengthValidator,
+    MaxValueValidator
+)
+
+from django.utils import timezone
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -65,25 +80,68 @@ class UserProfileSerializer(UserSerializer):
         read_only_fields = ('username', 'email', 'role', )
 
 
-class TitleSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Title
-        fields = '__all__'
-
-
 class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = '__all__'
+        fields = ('name', 'slug', )
 
 
 class GenreSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Genre
-        fields = '__all__'
+        fields = ('name', 'slug', )
+
+
+class TitleListSerializer(serializers.ModelSerializer):
+    category = CategorySerializer(read_only=True)
+    genre = GenreSerializer(read_only=True, many=True)
+    rating = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Title
+        fields = (
+            'id',
+            'name',
+            'year',
+            'description',
+            'rating',
+            'category',
+            'genre'
+        )
+
+    def get_rating(self, obj):
+        title = Title.objects.get(pk=obj.id)
+        return title.review.aggregate(Avg('score'))['score__avg']
+
+
+class TitlePostSerializer(serializers.ModelSerializer):
+    category = serializers.SlugRelatedField(
+        queryset=Category.objects.all(),
+        slug_field='slug'
+    )
+    genre = serializers.SlugRelatedField(
+        queryset=Genre.objects.all(),
+        slug_field='slug',
+        many=True
+    )
+    year = serializers.IntegerField(
+        validators=[MaxValueValidator(timezone.now().year)]
+    )
+
+    class Meta:
+        model = Title
+        fields = (
+            'name',
+            'year',
+            'description',
+            'category',
+            'genre'
+        )
+
+    def to_representation(self, value):
+        return TitleListSerializer(self.instance).data
 
 
 class ReviewSerializer(serializers.ModelSerializer):
