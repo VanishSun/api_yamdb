@@ -73,6 +73,7 @@ class Genre(models.Model):
         ]
     )
 
+
 class GenreTitle(models.Model):
     genre = models.ForeignKey('Genre', on_delete=models.CASCADE)
     title = models.ForeignKey('Title', on_delete=models.CASCADE)
@@ -82,7 +83,8 @@ class GenreTitle(models.Model):
 
 
 class Review(models.Model):
-    """Класс создания отзывов."""
+    """ Модель, определяющая отзывы.
+    """
 
     text = models.TextField(max_length=256)
     author = models.ForeignKey(
@@ -110,19 +112,19 @@ class Review(models.Model):
     class Meta:
         verbose_name = 'Отзыв'
         ordering = ('-pub_date',)
-        constraints = (
+        constraints = [
             models.UniqueConstraint(
-                fields=['author', 'title'],
-                name='unique_author_title'
+                fields=['title', 'author'], name='unique_title_author'
             ),
-        )
+        ]
 
     def __str__(self):
         return self.text[:LENGTH_TEXT]
 
 
 class Comment(models.Model):
-    """Класс создания комментариев."""
+    """ Модель, определяющая комментарии.
+    """
 
     text = models.TextField(
         verbose_name='текст'
