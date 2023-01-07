@@ -1,6 +1,6 @@
 from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
-from rest_framework import filters, mixins, viewsets
+from rest_framework import filters, mixins, viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -15,7 +15,11 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from reviews.models import Category, Genre, Title
 from users.models import User
-from api.permissions import IsAdmin, IsAdminOrReadOnly
+from api.permissions import (
+    IsAdmin,
+    IsAdminOrReadOnly,
+    IsAdminIsModeratorIsAuthor
+)
 from api.serializers import (
     CategorySerializer,
     CommentSerializer,
@@ -144,26 +148,33 @@ class GenreViewSet(CreateListDestroyViewSet):
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
+    permission_classes = (IsAdminIsModeratorIsAuthor, )
 
     def get_queryset(self):
+        "Возвращает отзыв на обьект."
         title = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
         return title.review.all()
 
     def perform_create(self, serializer):
+        "Создает отзыв от текущего пользователя."
         title = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
         serializer.save(author=self.request.user, title=title)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
+    permission_classes = (IsAdminIsModeratorIsAuthor,
+                          permissions.IsAuthenticatedOrReadOnly)
 
     def get_queryset(self):
+        "Возвращает комментарии к обьекту."
         title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
         review = get_object_or_404(
             title.review, id=self.kwargs.get('review_id'))
         return review.comments.all()
 
     def perform_create(self, serializer):
+        "Создает комментарий от текущего пользователя."
         title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
         review = get_object_or_404(
             title.review, id=self.kwargs.get('review_id'))
