@@ -1,5 +1,6 @@
 from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, mixins, viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -32,6 +33,7 @@ from api.serializers import (
     UserProfileSerializer,
     UserSerializer
 )
+from api.filters import FilterForTitleSet
 from .tasks import send_msg
 
 
@@ -121,6 +123,8 @@ class GetTokenView(APIView):
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     permission_classes = (IsAdminOrReadOnly, )
+    filter_backends = (DjangoFilterBackend, )
+    filterset_class = FilterForTitleSet
 
     def get_serializer_class(self):
         if self.action == 'list':
