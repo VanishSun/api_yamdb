@@ -1,3 +1,6 @@
+from django.core.validators import MaxValueValidator
+from django.db.models import Avg
+from django.utils import timezone
 from rest_framework import serializers, validators
 
 from reviews.models import (
@@ -9,13 +12,6 @@ from reviews.models import (
 )
 from users.models import User
 from users.validators import username_validator
-
-from django.db.models import Avg
-from django.core.validators import (
-    MaxValueValidator
-)
-
-from django.utils import timezone
 
 
 class UserSerializer(serializers.ModelSerializer):
