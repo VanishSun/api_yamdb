@@ -1,7 +1,6 @@
 from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from django_filters import rest_framework
 from rest_framework import filters, mixins, viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -34,6 +33,7 @@ from api.serializers import (
     UserProfileSerializer,
     UserSerializer
 )
+from api.filters import FilterForTitleSet
 from .tasks import send_msg
 
 
@@ -118,17 +118,6 @@ class GetTokenView(APIView):
             },
             status=HTTP_201_CREATED
         )
-
-
-class FilterForTitleSet(rest_framework.FilterSet):
-    name = rest_framework.CharFilter(field_name='name')
-    category = rest_framework.CharFilter(field_name='category__slug')
-    genre = rest_framework.CharFilter(field_name='genre__slug')
-    year = rest_framework.NumberFilter()
-
-    class Meta:
-        model = Title
-        fields = ('name', 'category', 'genre', 'year', )
 
 
 class TitleViewSet(viewsets.ModelViewSet):
