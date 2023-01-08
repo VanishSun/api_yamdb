@@ -3,6 +3,25 @@ from django.contrib import admin
 from .models import Title, Category, Genre, Review, Comment
 
 
+class GenreInline(admin.TabularInline):
+    model = Title.genre.through
+    extra = 1
+
+
+@admin.register(Title)
+class TitleAdmin(admin.ModelAdmin):
+    list_display = (
+        'name',
+        'year',
+        'description',
+        'category',
+    )
+    search_fields = ('name', 'description',)
+    list_filter = ('year', )
+    empty_value_display = 'None'
+    inlines = [GenreInline]
+
+
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = (
