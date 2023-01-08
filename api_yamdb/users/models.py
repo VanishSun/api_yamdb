@@ -16,10 +16,9 @@ ROLES = [
 
 class User(AbstractUser):
     """
-    Модель пользователя.
+    Модель пользователя унаследованная от AbstractUser.
     Добавлены поля роли и биографии.
-    Доступные роли: юзер, модератор и админ.
-    По умолчанию присваивает роль - юзер.
+    Доступные роли: user, moderator и admin. Default - user.
     """
     username = CharField(
         unique=True,
@@ -29,7 +28,7 @@ class User(AbstractUser):
         validators=[
             username_validator,
         ],
-        help_text='Имя пользователя. Не более 50 символов',
+        help_text='Имя пользователя. Не более 150 символов',
         verbose_name='Имя пользователя',
         error_messages={
             'unique': "A user with that username already exists.",
@@ -69,10 +68,6 @@ class User(AbstractUser):
         null=True,
         default='12345'
     )
-
-    @property
-    def is_user(self):
-        return self.role == USER
 
     @property
     def is_moderator(self):
