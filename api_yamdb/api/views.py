@@ -16,12 +16,13 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from reviews.models import Category, Genre, Title
 from users.models import User
-from api.permissions import (
+from .filters import FilterForTitleSet
+from .permissions import (
     IsAdmin,
     IsAdminOrReadOnly,
     IsAdminIsModeratorIsAuthor
 )
-from api.serializers import (
+from .serializers import (
     CategorySerializer,
     CommentSerializer,
     GenreSerializer,
@@ -33,7 +34,6 @@ from api.serializers import (
     UserProfileSerializer,
     UserSerializer
 )
-from api.filters import FilterForTitleSet
 from .tasks import send_msg
 
 
@@ -74,7 +74,9 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class SignUpView(APIView):
-
+    """
+    Получение confirmation code на переданный пользователем email.
+    """
     def post(self, request):
         serializer = SignUpSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -97,7 +99,9 @@ class SignUpView(APIView):
 
 
 class GetTokenView(APIView):
-
+    """
+    Получение JWT-токена в ответ на переданный пользователем confirmation code.
+    """
     def post(self, request):
         serializer = GetTokenSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)

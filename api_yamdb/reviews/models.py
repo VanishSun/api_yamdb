@@ -13,8 +13,8 @@ User = get_user_model()
 
 
 class Title(models.Model):
-    """ Модель, определяющая произведения
-    """
+    """ Модель, определяющая произведения."""
+
     name = models.CharField(max_length=256)
     year = models.IntegerField(blank=False, null=False)
     description = models.TextField(blank=True, null=True)
@@ -33,8 +33,8 @@ class Title(models.Model):
 
 
 class Category(models.Model):
-    """ Модель, определяющая категории
-    """
+    """ Модель, определяющая категории."""
+
     name = models.CharField(
         max_length=256,
         blank=False,
@@ -54,8 +54,8 @@ class Category(models.Model):
 
 
 class Genre(models.Model):
-    """ Модель, определяющая жанры
-    """
+    """ Модель, определяющая жанры."""
+
     name = models.CharField(
         max_length=256,
         blank=False,
@@ -75,6 +75,8 @@ class Genre(models.Model):
 
 
 class GenreTitle(models.Model):
+    """ Модель связи жанров и произведений."""
+
     genre = models.ForeignKey('Genre', on_delete=models.CASCADE)
     title = models.ForeignKey('Title', on_delete=models.CASCADE)
 
@@ -83,8 +85,7 @@ class GenreTitle(models.Model):
 
 
 class Review(models.Model):
-    """ Модель, определяющая отзывы.
-    """
+    """ Модель, определяющая отзывы."""
 
     text = models.TextField(max_length=256)
     author = models.ForeignKey(
@@ -110,7 +111,6 @@ class Review(models.Model):
     )
 
     class Meta:
-        verbose_name = 'Отзыв'
         ordering = ('-pub_date',)
         constraints = [
             models.UniqueConstraint(
@@ -123,8 +123,7 @@ class Review(models.Model):
 
 
 class Comment(models.Model):
-    """ Модель, определяющая комментарии.
-    """
+    """ Модель, определяющая комментарии."""
 
     text = models.TextField(
         verbose_name='текст'
