@@ -139,15 +139,16 @@ class TitlePostSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
-    author = serializers.StringRelatedField(
-        read_only=True
+    author = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='username'
     )
 
     def validate(self, data):
         """Проверка на невозможность более одного отзыва."""
         author = self.context.get('request').user
         title_id = self.context.get('view').kwargs.get('title_id')
-        if not self.context.get('request').method == 'POST':
+        if self.context.get('request').method != 'POST':
             return data
         if Review.objects.filter(author=author, title=title_id).exists():
             raise serializers.ValidationError(
@@ -168,8 +169,9 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    author = serializers.StringRelatedField(
-        read_only=True
+    author = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='username'
     )
     review = serializers.SlugRelatedField(
         read_only=True,
