@@ -57,9 +57,9 @@ class User(AbstractUser):
     )
     confirmation_code = CharField(
         max_length=255,
-        blank=False,
+        unique=True,
         null=True,
-        default='12345'
+        editable=False
     )
 
     @property
