@@ -44,16 +44,6 @@ class User(AbstractUser):
         blank=False,
         verbose_name='Адрес электронной почты',
     )
-    first_name = CharField(
-        max_length=150,
-        blank=True,
-        verbose_name='Имя',
-    )
-    last_name = CharField(
-        max_length=150,
-        blank=True,
-        verbose_name='Фамилия',
-    )
     bio = TextField(
         blank=True,
         verbose_name='Биография',
