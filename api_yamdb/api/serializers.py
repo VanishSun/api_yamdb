@@ -26,7 +26,7 @@ class UserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
         required=True,
         max_length=254,
-        validators=[validators.UniqueValidator(queryset=User.objects.all()), ]
+        validators=[validators.UniqueValidator(queryset=User.objects.all())]
     )
 
     class Meta:
@@ -37,7 +37,7 @@ class UserSerializer(serializers.ModelSerializer):
             'first_name',
             'last_name',
             'bio',
-            'role',
+            'role'
         )
 
 
@@ -45,7 +45,7 @@ class SignUpSerializer(serializers.Serializer):
     username = serializers.CharField(
         required=True,
         max_length=150,
-        validators=[username_validator, ]
+        validators=[username_validator]
     )
     email = serializers.EmailField(
         required=True,
@@ -54,38 +54,40 @@ class SignUpSerializer(serializers.Serializer):
 
     class Meta:
         model = User
-        fields = ('username', 'email', )
+        fields = ('username', 'email')
 
 
 class GetTokenSerializer(serializers.Serializer):
     username = serializers.CharField(
-        required=True)
+        required=True
+    )
     confirmation_code = serializers.CharField(
-        required=True)
+        required=True
+    )
 
     class Meta:
         model = User
-        fields = ('username', 'confirmation_code', )
+        fields = ('username', 'confirmation_code')
 
 
 class UserProfileSerializer(UserSerializer):
 
     class Meta(UserSerializer.Meta):
-        read_only_fields = ('username', 'email', 'role', )
+        read_only_fields = ('username', 'email', 'role')
 
 
 class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ('name', 'slug', )
+        fields = ('name', 'slug')
 
 
 class GenreSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Genre
-        fields = ('name', 'slug', )
+        fields = ('name', 'slug')
 
 
 class TitleListSerializer(serializers.ModelSerializer):
