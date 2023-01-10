@@ -83,5 +83,4 @@ def create_confirmation_code(sender, instance, created, **kwargs):
     if created:
         confirmation_code = default_token_generator.make_token(instance)
         instance.confirmation_code = confirmation_code
-        print(instance.confirmation_code)
         instance.save()
