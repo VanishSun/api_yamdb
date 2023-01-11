@@ -1,5 +1,4 @@
 from django.core.validators import MaxValueValidator
-from django.db.models import Avg
 from django.utils import timezone
 from rest_framework import serializers, validators
 
@@ -91,7 +90,7 @@ class GenreSerializer(serializers.ModelSerializer):
 class TitleListSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
     genre = GenreSerializer(read_only=True, many=True)
-    rating = serializers.SerializerMethodField()
+    rating = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Title
@@ -104,10 +103,6 @@ class TitleListSerializer(serializers.ModelSerializer):
             'category',
             'genre'
         )
-
-    def get_rating(self, obj):
-        title = Title.objects.get(pk=obj.id)
-        return title.review.aggregate(Avg('score'))['score__avg']
 
 
 class TitlePostSerializer(serializers.ModelSerializer):
