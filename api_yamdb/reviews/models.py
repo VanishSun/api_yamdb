@@ -15,20 +15,28 @@ User = get_user_model()
 class Title(models.Model):
     """ Модель, определяющая произведения."""
 
-    name = models.CharField(max_length=256)
-    year = models.IntegerField(blank=False, null=False)
-    description = models.TextField(blank=True, null=True)
+    name = models.CharField(
+        max_length=256,
+        verbose_name="Наименование произведения"
+    )
+    year = models.IntegerField(verbose_name="Год выпуска")
+    description = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name="Описание произведения"
+    )
     category = models.ForeignKey(
         'Category',
-        on_delete=models.DO_NOTHING,
-        related_name='categories',
+        on_delete=models.SET_NULL,
+        related_name='titles',
         blank=True,
-        null=True
+        null=True,
+        verbose_name="Категория"
     )
     genre = models.ManyToManyField(
         'Genre',
         through='GenreTitle',
-        blank=True
+        verbose_name="Жанр"
     )
 
 
@@ -40,7 +48,8 @@ class Category(models.Model):
         blank=False,
         validators=[
             MaxLengthValidator(256),
-        ]
+        ],
+        verbose_name="Наименование категории"
     )
     slug = models.SlugField(
         max_length=50,
@@ -49,7 +58,8 @@ class Category(models.Model):
         validators=[
             MaxLengthValidator(50),
             RegexValidator('^[-a-zA-Z0-9_]+$'),
-        ]
+        ],
+        verbose_name="Url категории"
     )
 
 
@@ -61,7 +71,8 @@ class Genre(models.Model):
         blank=False,
         validators=[
             MaxLengthValidator(256),
-        ]
+        ],
+        verbose_name="Наименование жанра"
     )
     slug = models.SlugField(
         max_length=50,
@@ -70,7 +81,8 @@ class Genre(models.Model):
         validators=[
             MaxLengthValidator(50),
             RegexValidator('^[-a-zA-Z0-9_]+$'),
-        ]
+        ],
+        verbose_name="Url жанра"
     )
 
 
