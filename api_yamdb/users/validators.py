@@ -13,5 +13,5 @@ def username_validator(value):
     if check_value is None or check_value.group() != value:
         raise ValidationError(
             (f'Недопустимые символы в нике <{value}> '),
-            params={'value': value},
+            params={'value': value}
         )

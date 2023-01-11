@@ -46,9 +46,7 @@ class Category(models.Model):
     name = models.CharField(
         max_length=256,
         blank=False,
-        validators=[
-            MaxLengthValidator(256),
-        ],
+        validators=[MaxLengthValidator(256)],
         verbose_name="Наименование категории"
     )
     slug = models.SlugField(
@@ -69,9 +67,7 @@ class Genre(models.Model):
     name = models.CharField(
         max_length=256,
         blank=False,
-        validators=[
-            MaxLengthValidator(256),
-        ],
+        validators=[MaxLengthValidator(256)],
         verbose_name="Наименование жанра"
     )
     slug = models.SlugField(
@@ -103,12 +99,12 @@ class Review(models.Model):
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='review',
+        related_name='review'
     )
     score = models.PositiveIntegerField(
         validators=[
             MinValueValidator(1),
-            MaxValueValidator(10),
+            MaxValueValidator(10)
         ]
     )
     pub_date = models.DateTimeField(
@@ -143,7 +139,7 @@ class Comment(models.Model):
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='comments',
+        related_name='comments'
     )
     pub_date = models.DateTimeField(
         auto_now_add=True,
@@ -152,7 +148,7 @@ class Comment(models.Model):
     review = models.ForeignKey(
         Review,
         on_delete=models.CASCADE,
-        related_name='comments',
+        related_name='comments'
     )
 
     class Meta:

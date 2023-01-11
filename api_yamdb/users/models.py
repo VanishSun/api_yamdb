@@ -28,25 +28,23 @@ class User(AbstractUser):
         max_length=150,
         null=False,
         blank=False,
-        validators=[
-            username_validator,
-        ],
+        validators=[username_validator],
         help_text='Имя пользователя. Не более 150 символов',
         verbose_name='Имя пользователя',
         error_messages={
-            'unique': "A user with that username already exists.",
-        },
+            'unique': "A user with that username already exists."
+        }
     )
     email = EmailField(
         max_length=254,
         unique=True,
         null=False,
         blank=False,
-        verbose_name='Адрес электронной почты',
+        verbose_name='Адрес электронной почты'
     )
     bio = TextField(
         blank=True,
-        verbose_name='Биография',
+        verbose_name='Биография'
     )
     role = CharField(
         verbose_name='Роль',

@@ -14,33 +14,27 @@ class TitleAdmin(admin.ModelAdmin):
         'name',
         'year',
         'description',
-        'category',
+        'category'
     )
-    search_fields = ('name', 'description',)
-    list_filter = ('year', )
+    search_fields = ('name', 'description')
+    list_filter = ('year',)
     empty_value_display = 'None'
     inlines = [GenreInline]
 
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = (
-        'name',
-        'slug'
-    )
-    search_fields = ('name', 'slug', )
-    list_filter = ('name', 'slug', )
+    list_display = ('name', 'slug')
+    search_fields = ('name', 'slug')
+    list_filter = ('name', 'slug')
     empty_value_display = 'None'
 
 
 @admin.register(Genre)
 class GenreAdmin(admin.ModelAdmin):
-    list_display = (
-        'name',
-        'slug'
-    )
-    search_fields = ('name', 'slug', )
-    list_filter = ('name', 'slug', )
+    list_display = ('name', 'slug')
+    search_fields = ('name', 'slug')
+    list_filter = ('name', 'slug')
     empty_value_display = 'None'
 
 
@@ -53,7 +47,7 @@ class ReviewAdmin(admin.ModelAdmin):
         'score',
         'pub_date'
     )
-    search_fields = ('author', 'title_id', )
+    search_fields = ('author', 'title_id')
     list_filter = ('author', 'score', 'pub_date')
     empty_value_display = 'None'
 
@@ -67,5 +61,5 @@ class CommentAdmin(admin.ModelAdmin):
         'pub_date'
     )
     list_filter = ('author', 'pub_date')
-    search_fields = ('author', 'review_id', )
+    search_fields = ('author', 'review_id')
     empty_value_display = 'None'

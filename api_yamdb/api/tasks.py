@@ -12,6 +12,4 @@ def send_msg(user):
     Адрес почты: {user.email}
     Код подтверждения: {user.confirmation_code}
     """
-    send_mail(
-        subject, body, settings.FROM_EMAIL, [email, ],
-    )
+    send_mail(subject, body, settings.FROM_EMAIL, [email])
