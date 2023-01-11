@@ -44,16 +44,6 @@ class User(AbstractUser):
         blank=False,
         verbose_name='Адрес электронной почты',
     )
-    first_name = CharField(
-        max_length=150,
-        blank=True,
-        verbose_name='Имя',
-    )
-    last_name = CharField(
-        max_length=150,
-        blank=True,
-        verbose_name='Фамилия',
-    )
     bio = TextField(
         blank=True,
         verbose_name='Биография',
@@ -67,9 +57,9 @@ class User(AbstractUser):
     )
     confirmation_code = CharField(
         max_length=255,
-        blank=False,
+        unique=True,
         null=True,
-        default='12345'
+        editable=False
     )
 
     @property
@@ -93,5 +83,4 @@ def create_confirmation_code(sender, instance, created, **kwargs):
     if created:
         confirmation_code = default_token_generator.make_token(instance)
         instance.confirmation_code = confirmation_code
-        print(instance.confirmation_code)
         instance.save()

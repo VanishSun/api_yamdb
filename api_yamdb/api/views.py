@@ -51,10 +51,10 @@ class UserViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'post', 'patch', 'delete']
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = (IsAuthenticated, IsAdmin,)
+    permission_classes = (IsAdmin,)
     lookup_field = 'username'
-    filter_backends = (filters.SearchFilter, )
-    search_fields = ('username', )
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('username',)
 
     @action(
         methods=['GET', 'PATCH'],
@@ -83,20 +83,21 @@ class SignUpView(APIView):
         serializer.is_valid(raise_exception=True)
         username = serializer.validated_data.get('username')
         email = serializer.validated_data.get('email')
-        print(username, email)
         try:
             user, created = User.objects.get_or_create(
                 username=username,
                 email=email
             )
         except IntegrityError as error:
+            # В данном случае эта ошибка выпадает, если username или email
+            # уже использованы другими юзерами по отдельности.
             raise ValidationError(
                 ('Ошибка создания пользователя'
                  f'в базе с username "{username}" и email "{email}"')
             ) from error
         user.save()
         send_msg(user)
-        return Response(serializer.validated_data, status=HTTP_200_OK)
+        return Response(serializer.data)
 
 
 class GetTokenView(APIView):
@@ -127,8 +128,8 @@ class GetTokenView(APIView):
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.annotate(rating=Avg('review__score')).all()
-    permission_classes = (IsAdminOrReadOnly, )
-    filter_backends = (DjangoFilterBackend, )
+    permission_classes = (IsAdminOrReadOnly,)
+    filter_backends = (DjangoFilterBackend,)
     filterset_class = FilterForTitleSet
 
     def get_serializer_class(self):
@@ -140,24 +141,24 @@ class TitleViewSet(viewsets.ModelViewSet):
 class CategoryViewSet(CreateListDestroyViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = (IsAdminOrReadOnly, )
+    permission_classes = (IsAdminOrReadOnly,)
     lookup_field = 'slug'
-    filter_backends = (filters.SearchFilter, )
-    search_fields = ('name', )
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)
 
 
 class GenreViewSet(CreateListDestroyViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    permission_classes = (IsAdminOrReadOnly, )
+    permission_classes = (IsAdminOrReadOnly,)
     lookup_field = 'slug'
-    filter_backends = (filters.SearchFilter, )
-    search_fields = ('name', )
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
-    permission_classes = (IsAdminIsModeratorIsAuthor, )
+    permission_classes = (IsAdminIsModeratorIsAuthor,)
 
     def get_queryset(self):
         "Возвращает отзыв на обьект."
@@ -172,19 +173,25 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes = (IsAdminIsModeratorIsAuthor,
-                          permissions.IsAuthenticatedOrReadOnly)
+    permission_classes = (
+        IsAdminIsModeratorIsAuthor,
+        permissions.IsAuthenticatedOrReadOnly
+    )
 
     def get_queryset(self):
         "Возвращает комментарии к обьекту."
         title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
         review = get_object_or_404(
-            title.review, id=self.kwargs.get('review_id'))
+            title.review,
+            id=self.kwargs.get('review_id')
+        )
         return review.comments.all()
 
     def perform_create(self, serializer):
         "Создает комментарий от текущего пользователя."
         title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
         review = get_object_or_404(
-            title.review, id=self.kwargs.get('review_id'))
+            title.review,
+            id=self.kwargs.get('review_id')
+        )
         serializer.save(author=self.request.user, review=review)

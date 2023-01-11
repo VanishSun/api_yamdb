@@ -25,7 +25,7 @@ class UserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
         required=True,
         max_length=254,
-        validators=[validators.UniqueValidator(queryset=User.objects.all()), ]
+        validators=[validators.UniqueValidator(queryset=User.objects.all())]
     )
 
     class Meta:
@@ -36,7 +36,7 @@ class UserSerializer(serializers.ModelSerializer):
             'first_name',
             'last_name',
             'bio',
-            'role',
+            'role'
         )
 
 
@@ -44,7 +44,7 @@ class SignUpSerializer(serializers.Serializer):
     username = serializers.CharField(
         required=True,
         max_length=150,
-        validators=[username_validator, ]
+        validators=[username_validator]
     )
     email = serializers.EmailField(
         required=True,
@@ -53,38 +53,36 @@ class SignUpSerializer(serializers.Serializer):
 
     class Meta:
         model = User
-        fields = ('username', 'email', )
+        fields = ('username', 'email')
 
 
 class GetTokenSerializer(serializers.Serializer):
-    username = serializers.CharField(
-        required=True)
-    confirmation_code = serializers.CharField(
-        required=True)
+    username = serializers.CharField(required=True)
+    confirmation_code = serializers.CharField(required=True)
 
     class Meta:
         model = User
-        fields = ('username', 'confirmation_code', )
+        fields = ('username', 'confirmation_code')
 
 
 class UserProfileSerializer(UserSerializer):
 
     class Meta(UserSerializer.Meta):
-        read_only_fields = ('username', 'email', 'role', )
+        read_only_fields = ('username', 'email', 'role')
 
 
 class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ('name', 'slug', )
+        fields = ('name', 'slug')
 
 
 class GenreSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Genre
-        fields = ('name', 'slug', )
+        fields = ('name', 'slug')
 
 
 class TitleListSerializer(serializers.ModelSerializer):
@@ -134,15 +132,16 @@ class TitlePostSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
-    author = serializers.StringRelatedField(
-        read_only=True
+    author = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='username'
     )
 
     def validate(self, data):
         """Проверка на невозможность более одного отзыва."""
         author = self.context.get('request').user
         title_id = self.context.get('view').kwargs.get('title_id')
-        if not self.context.get('request').method == 'POST':
+        if self.context.get('request').method != 'POST':
             return data
         if Review.objects.filter(author=author, title=title_id).exists():
             raise serializers.ValidationError(
@@ -163,8 +162,9 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    author = serializers.StringRelatedField(
-        read_only=True
+    author = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='username'
     )
     review = serializers.SlugRelatedField(
         read_only=True,
