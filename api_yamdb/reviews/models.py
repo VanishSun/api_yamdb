@@ -39,6 +39,10 @@ class Title(models.Model):
         verbose_name="Жанр"
     )
 
+    class Meta:
+        verbose_name = 'Произведение'
+        verbose_name_plural = 'Произведения'
+
 
 class Category(models.Model):
     """ Модель, определяющая категории."""
@@ -58,6 +62,10 @@ class Category(models.Model):
         verbose_name="Url категории"
     )
 
+    class Meta:
+        verbose_name = 'Категория'
+        verbose_name_plural = 'Категории'
+
 
 class Genre(models.Model):
     """ Модель, определяющая жанры."""
@@ -76,6 +84,10 @@ class Genre(models.Model):
         ],
         verbose_name="Url жанра"
     )
+
+    class Meta:
+        verbose_name = 'Жанр'
+        verbose_name_plural = 'Жанры'
 
 
 class GenreTitle(models.Model):
@@ -128,6 +140,8 @@ class Review(models.Model):
                 name='unique_title_author'
             ),
         ]
+        verbose_name = 'Отзыв'
+        verbose_name_plural = 'Отзывы'
 
     def __str__(self):
         return self.text[:LENGTH_TEXT]
@@ -159,6 +173,8 @@ class Comment(models.Model):
 
     class Meta:
         ordering = ('-pub_date',)
+        verbose_name = 'Комментарий'
+        verbose_name_plural = 'Комментарии'
 
     def __str__(self):
         return self.text[:LENGTH_TEXT]
