@@ -117,8 +117,7 @@ class Review(models.Model):
         Title,
         on_delete=models.CASCADE,
         related_name='reviews',
-        verbose_name='Произведение',
-        null=True
+        verbose_name='Произведение'
     )
 
     class Meta:
