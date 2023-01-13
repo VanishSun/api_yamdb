@@ -2,13 +2,12 @@ from django.db import IntegrityError
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, mixins, viewsets, permissions
+from rest_framework import filters, viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.serializers import ValidationError
 from rest_framework.status import (
-    HTTP_200_OK,
     HTTP_201_CREATED,
     HTTP_400_BAD_REQUEST,
 )
@@ -18,6 +17,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from reviews.models import Category, Genre, Title
 from users.models import User
 from .filters import FilterForTitleSet
+from .mixins import CreateListDestroyViewSet
 from .permissions import (
     IsAdmin,
     IsAdminOrReadOnly,
@@ -36,15 +36,6 @@ from .serializers import (
     UserSerializer
 )
 from .tasks import send_msg
-
-
-class CreateListDestroyViewSet(
-    mixins.CreateModelMixin,
-    mixins.ListModelMixin,
-    mixins.DestroyModelMixin,
-    viewsets.GenericViewSet
-):
-    pass
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -71,7 +62,7 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         if request.method == 'PATCH':
             serializer.save()
-        return Response(serializer.data, status=HTTP_200_OK)
+        return Response(serializer.data)
 
 
 class SignUpView(APIView):
@@ -84,18 +75,15 @@ class SignUpView(APIView):
         username = serializer.validated_data.get('username')
         email = serializer.validated_data.get('email')
         try:
-            user, created = User.objects.get_or_create(
+            user, _ = User.objects.get_or_create(
                 username=username,
                 email=email
             )
         except IntegrityError as error:
-            # В данном случае эта ошибка выпадает, если username или email
-            # уже использованы другими юзерами по отдельности.
             raise ValidationError(
                 ('Ошибка создания пользователя'
                  f'в базе с username "{username}" и email "{email}"')
             ) from error
-        user.save()
         send_msg(user)
         return Response(serializer.data)
 
