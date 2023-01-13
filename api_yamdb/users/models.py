@@ -26,8 +26,6 @@ class User(AbstractUser):
     username = CharField(
         unique=True,
         max_length=150,
-        null=False,
-        blank=False,
         validators=[username_validator],
         help_text='Имя пользователя. Не более 150 символов',
         verbose_name='Имя пользователя',
@@ -38,8 +36,6 @@ class User(AbstractUser):
     email = EmailField(
         max_length=254,
         unique=True,
-        null=False,
-        blank=False,
         verbose_name='Адрес электронной почты'
     )
     bio = TextField(
@@ -68,12 +64,12 @@ class User(AbstractUser):
     def is_admin(self):
         return self.role == ADMIN
 
+    class Meta:
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
+
     def __str__(self):
         return self.username
-
-    class Meta:
-        verbose_name = 'user'
-        verbose_name_plural = 'users'
 
 
 @receiver(post_save, sender=User, dispatch_uid='create_confirmation_code')
