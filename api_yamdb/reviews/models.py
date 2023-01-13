@@ -45,13 +45,11 @@ class Category(models.Model):
 
     name = models.CharField(
         max_length=256,
-        blank=False,
         validators=[MaxLengthValidator(256)],
         verbose_name="Наименование категории"
     )
     slug = models.SlugField(
         max_length=50,
-        blank=False,
         unique=True,
         validators=[
             MaxLengthValidator(50),
@@ -66,13 +64,11 @@ class Genre(models.Model):
 
     name = models.CharField(
         max_length=256,
-        blank=False,
         validators=[MaxLengthValidator(256)],
         verbose_name="Наименование жанра"
     )
     slug = models.SlugField(
         max_length=50,
-        blank=False,
         unique=True,
         validators=[
             MaxLengthValidator(50),
@@ -95,26 +91,33 @@ class GenreTitle(models.Model):
 class Review(models.Model):
     """ Модель, определяющая отзывы."""
 
-    text = models.TextField(max_length=256)
+    text = models.TextField(
+        max_length=256,
+        verbose_name='Текст'
+    )
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='review'
+        related_name='reviews',
+        verbose_name='Автор'
     )
     score = models.PositiveIntegerField(
         validators=[
             MinValueValidator(1),
             MaxValueValidator(10)
-        ]
+        ],
+        verbose_name='Оценка произведения'
     )
     pub_date = models.DateTimeField(
         auto_now_add=True,
-        db_index=True
+        db_index=True,
+        verbose_name='Дата публикации'
     )
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
-        related_name='review',
+        related_name='reviews',
+        verbose_name='Произведение',
         null=True
     )
 
@@ -122,7 +125,8 @@ class Review(models.Model):
         ordering = ('-pub_date',)
         constraints = [
             models.UniqueConstraint(
-                fields=['title', 'author'], name='unique_title_author'
+                fields=['title', 'author'],
+                name='unique_title_author'
             ),
         ]
 
@@ -134,21 +138,24 @@ class Comment(models.Model):
     """ Модель, определяющая комментарии."""
 
     text = models.TextField(
-        verbose_name='текст'
+        verbose_name='Текст'
     )
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='comments'
+        related_name='comments',
+        verbose_name='Автор'
     )
     pub_date = models.DateTimeField(
         auto_now_add=True,
-        db_index=True
+        db_index=True,
+        verbose_name='Дата публикации'
     )
     review = models.ForeignKey(
         Review,
         on_delete=models.CASCADE,
-        related_name='comments'
+        related_name='comments',
+        verbose_name='Отзыв'
     )
 
     class Meta:

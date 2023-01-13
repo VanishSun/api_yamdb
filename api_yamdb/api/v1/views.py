@@ -115,7 +115,7 @@ class GetTokenView(APIView):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.annotate(rating=Avg('review__score')).all()
+    queryset = Title.objects.annotate(rating=Avg('reviews__score')).all()
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = FilterForTitleSet
@@ -151,7 +151,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         "Возвращает отзыв на обьект."
         title = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
-        return title.review.all()
+        return title.reviews.all()
 
     def perform_create(self, serializer):
         "Создает отзыв от текущего пользователя."
@@ -170,7 +170,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         "Возвращает комментарии к обьекту."
         title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
         review = get_object_or_404(
-            title.review,
+            title.reviews,
             id=self.kwargs.get('review_id')
         )
         return review.comments.all()
@@ -179,7 +179,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         "Создает комментарий от текущего пользователя."
         title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
         review = get_object_or_404(
-            title.review,
+            title.reviews,
             id=self.kwargs.get('review_id')
         )
         serializer.save(author=self.request.user, review=review)
